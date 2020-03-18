@@ -45,6 +45,8 @@ app.post(`/${endpoint}`, async (req, res) => {
   const action = {};
   const trello = new Trello(action.board);
 
+  console.error('Web hook has been called ' + req.body);
+
   if (req.body.action.display.translationKey === "action_move_card_from_list_to_list") {
     status.old = req.body.action.data.listBefore.name.toLowerCase();
     status.new = req.body.action.data.listAfter.name.toLowerCase();
