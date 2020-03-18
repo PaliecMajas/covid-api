@@ -25,8 +25,8 @@ app.get('/', (req, res) => {
 
 // Get data from CF7 Webhook
 app.post('/', async (req, res) => {
-  let submission = req.body;
-  submission.phone = sanitizePhoneNr(submission.phone);
+  // let submission = req.body;
+  // submission.phone = sanitizePhoneNr(submission.phone);
   // create trello card
   const trello = new Trello();
   await trello.init();
@@ -34,8 +34,7 @@ app.post('/', async (req, res) => {
     await trello.newCard(req.body);
     res.send("Success!\n");
   } catch (err) {
-    console.error("Received request " + JSON.stringify(submission));
-    res.send("Failed because of reasons, error has been logged");
+    res.send("Failed because of reasons, error has been logged ");
   }
 });
 
