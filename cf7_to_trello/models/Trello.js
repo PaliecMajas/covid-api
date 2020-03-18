@@ -48,7 +48,7 @@ class Trello {
 
     async newCard(formFields, list = this.lists.incoming) {
         let query = [];
-        let request = formFields.request;
+        let request = JSON.stringify(formFields.request);
         if (request.length > 160){
             query.push(`name=${request.substring(0,157)}...`);
         } else {
