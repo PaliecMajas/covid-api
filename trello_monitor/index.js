@@ -5,21 +5,24 @@ const Trello = require('./models/Trello');
 const Zelos = require('./models/Zelos');
 
 const sms = true; // assumes you have a texting service configured!
-const Infobip = require('./models/Infobip'); // you don't need this if you don't
-const messages = require('./config/messages'); // message templates
+//const Infobip = require('./models/Infobip'); // you don't need this if you don't
+const messages = {
+  "approved": process.env.MSG_APPROVED,
+  "rejected": process.env.MSG_REJECTED
+};
 
-let endpoint = ""
+let endpoint = "";
 
 // Check environment
 if (!process.env.GCP_PROJECT) {
-  console.log("[i] Not in the cloud")
+  console.log("[i] Not in the cloud");
   // Set up body parsing middleware
   const bodyParser = require('body-parser');
-  endpoint = "debug"
+  endpoint = "debug";
   app.use(bodyParser.urlencoded({
     extended: false
-  }))
-  app.use(bodyParser.json())
+  }));
+  app.use(bodyParser.json());
 
   const port = process.env.PORT || 9000;
   app.listen(port, () => {
@@ -38,9 +41,9 @@ app.get(`/${endpoint}`, (req, res) => {
 
 // Get data from Trello Webhook
 app.post(`/${endpoint}`, async (req, res) => {
-  const status = {}
-  const action = {}
-  const trello = new Trello(action.board)
+  const status = {};
+  const action = {};
+  const trello = new Trello(action.board);
 
   if (req.body.action.display.translationKey === "action_move_card_from_list_to_list") {
     status.old = req.body.action.data.listBefore.name.toLowerCase();
@@ -70,7 +73,7 @@ app.post(`/${endpoint}`, async (req, res) => {
           // Mark the card
           await trello.addLabel(action.card, status.new, "green");
           // Send a confirmation message
-          if (sms && !(taskData.phone == "")) {
+          if (sms && !(taskData.phone === "")) {
             const text = new Infobip();
             try {
               await text.sendMessage(taskData.phone, messages.approved);
@@ -81,7 +84,7 @@ app.post(`/${endpoint}`, async (req, res) => {
         }
       }
     }
-    if (status.new === "rejected") {;
+    if (status.new === "rejected") {
       if (!checkLabels(labels, status.new)) {
         // Send a rejected text (maybe)
         if (sms) {
@@ -89,8 +92,8 @@ app.post(`/${endpoint}`, async (req, res) => {
           const cardFields = await trello.getCustomFields(action.card);
           const taskData = parseCustomFields(cardFields, trello.customFields);
           console.log(taskData);
-          if (!taskData.phone == "") {
-            console.log(`sending a text to ${taskData.phone}`)
+          if (!taskData.phone === "") {
+            console.log(`sending a text to ${taskData.phone}`);
             const text = new Infobip();
             try {
               await text.sendMessage(taskData.phone, messages.rejected);
@@ -112,14 +115,13 @@ function checkLabels(labels, status) {
   labels.forEach(obj => {
     allLabels.push(obj.name);
   });
-  const result = allLabels.includes(status);
-  return result
+  return allLabels.includes(status);
 }
 
 function parseCustomFields(cardFields, boardFields) {
-  let taskData = {}
+  let taskData = {};
   cardFields.forEach(obj => {
-    const value = obj.value.text
+    const value = obj.value.text;
     const label = getKeyByValue(boardFields, obj.idCustomField);
     taskData[label] = value;
   });
