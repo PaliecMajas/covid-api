@@ -7,7 +7,8 @@ const config = {
         "rejected": ""
     },
     "key": process.env.TRELLO_KEY,
-    "token": process.env.TRELLO_TOKEN
+    "token": process.env.TRELLO_TOKEN,
+    "board": process.env.TRELLO_BOARD
 };
 
 class Trello {
