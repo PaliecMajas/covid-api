@@ -1,7 +1,14 @@
 const axios = require('axios');
 
-const env = (process.env.GCP_PROJECT) ? "" : ".dev";
-const config = require(`../config/trello${env}.json`);
+const config = {
+    "list": {
+        "incoming": "",
+        "approved": "",
+        "rejected": ""
+    },
+    "key": process.env.TRELLO_KEY,
+    "token": process.env.TRELLO_TOKEN
+};
 
 class Trello {
     constructor() {
