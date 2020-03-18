@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const env = (process.env.GCP_PROJECT) ? "" : ".dev"
+const env = (process.env.GCP_PROJECT) ? "" : ".dev";
 const config = require(`../config/trello${env}.json`);
 
 class Trello {
@@ -39,7 +39,7 @@ class Trello {
     }
 
     async newCard(formFields, list = this.lists.incoming) {
-        let query = []
+        let query = [];
         let request = formFields.request;
         if (request.length > 160){
             query.push(`name=${request.substring(0,157)}...`);
@@ -71,9 +71,9 @@ class Trello {
                 },
                 "key": config.key,
                 "token": config.token
-            }
+            };
             requests.push([`https://api.trello.com/1/card/${card}/customField/${field}/item`, value]);
-        })
+        });
         requests.forEach(async req => {
             try {
                 const res = await axios.put(req[0], req[1]);
