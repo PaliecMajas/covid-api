@@ -14,13 +14,15 @@ class Zelos {
         this.credentials = config.credentials;
     }
     async init() {
-        const res = await axios.post('https://app.zelos.space/api/auth', this.credentials);
-        this.tokens = res.data.data;
-        axios.defaults.headers.common['Authorization'] = `Bearer ${this.tokens.access.token}`;
-        const status = await axios.get(`${this.url}/api/status`);
-        console.error(`[i] Authenticated to "${status.data.event_name}"`);
-        //await this.getTasks();
-        //await this.getGroups();
+        try {
+            const res = await axios.post('https://app.zelos.space/api/auth', this.credentials);
+            this.tokens = res.data.data;
+            axios.defaults.headers.common['Authorization'] = `Bearer ${this.tokens.access.token}`;
+            const status = await axios.get(`${this.url}/api/status`);
+            console.log(`[i] Authenticated to "${status.data.event_name}"`);
+        } catch (e) {
+            console.error(`Error while authenticate to Zelos: ${e.message}`);
+        }
     }
     async getTasks() {
         const res = await axios.get(`${this.url}/api/task`);
