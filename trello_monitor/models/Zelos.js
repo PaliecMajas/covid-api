@@ -18,7 +18,7 @@ class Zelos {
         this.tokens = res.data.data;
         axios.defaults.headers.common['Authorization'] = `Bearer ${this.tokens.access.token}`;
         const status = await axios.get(`${this.url}/api/status`);
-        console.log(`[i] Authenticated to "${status.data.event_name}"`);
+        console.error(`[i] Authenticated to "${status.data.event_name}"`);
         //await this.getTasks();
         //await this.getGroups();
     }
@@ -46,14 +46,14 @@ class Zelos {
     }
 
     async newTask(details, groups = []) {
-        let name = ""
-        const description = details.description
+        let name = "";
+        const description = details.description;
         if (description.length > 255) {
             name = `${description.substring(0,252)}...`
         } else {
             name = description
         }
-        const instruction = []
+        const instruction = [];
         Object.keys(details).forEach(item => {
             if (item === "phone" || item === "address" || item === "name") {
                 instruction.push(`${item.capitalize()}: ${details[item]}`)
@@ -76,7 +76,7 @@ class Zelos {
             "groups": groups,
             "location_id": null,
             "user_ids": []
-        }
+        };
         try {
             const res = await axios.post(`${this.url}/api/task/regular`, body)
             const taskUrl = this.url + "/tasks/" + res.data.data.id;
