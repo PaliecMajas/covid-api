@@ -45,7 +45,7 @@ app.post(`/${endpoint}`, async (req, res) => {
   const action = {};
   const trello = new Trello(action.board);
 
-  console.error('Web hook has been called ' + req.body);
+  console.error('Web hook has been called ' + JSON.stringify(req.body));
 
   if (req.body.action.display.translationKey === "action_move_card_from_list_to_list") {
     status.old = req.body.action.data.listBefore.name.toLowerCase();
@@ -76,9 +76,9 @@ app.post(`/${endpoint}`, async (req, res) => {
           await trello.addLabel(action.card, status.new, "green");
           // Send a confirmation message
           if (sms && !(taskData.phone === "")) {
-            const text = new Infobip();
+            //const text = new Infobip();
             try {
-              await text.sendMessage(taskData.phone, messages.approved);
+              //await text.sendMessage(taskData.phone, messages.approved);
               await trello.addLabel(action.card, "SMS sent", "blue");
             } catch (err) {
             }
@@ -96,9 +96,9 @@ app.post(`/${endpoint}`, async (req, res) => {
           console.log(taskData);
           if (!taskData.phone === "") {
             console.log(`sending a text to ${taskData.phone}`);
-            const text = new Infobip();
+            //const text = new Infobip();
             try {
-              await text.sendMessage(taskData.phone, messages.rejected);
+              //await text.sendMessage(taskData.phone, messages.rejected);
               trello.addLabel(action.card, "SMS sent", "blue");
             } catch (err) {
             }
