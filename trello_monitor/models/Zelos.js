@@ -1,7 +1,12 @@
-const axios = require('axios')
+const axios = require('axios');
 
-const env = (process.env.GCP_PROJECT) ? "" : ".dev"
-const config = require(`../config/zelos${env}.json`)
+const config = {
+    "credentials": {
+        "email": process.env.CRED_ZELOS_EMAIL,
+        "password": process.env.CRED_ZELOS_PASSWORD
+    },
+    "workspace": process.env.ZELOS_WORKSPACE
+};
 
 class Zelos {
     constructor() {
