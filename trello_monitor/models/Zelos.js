@@ -79,7 +79,6 @@ class Zelos {
             "location_id": null,
             "user_ids": []
         };
-        console.log(`[D] Submitting regular task to Zelos: ${JSON.stringify(body)}`);
         try {
             const res = await axios.post(`${this.url}/api/task/regular`, body);
             const taskUrl = this.url + "/tasks/" + res.data.data.id;
