@@ -34,7 +34,8 @@ app.post('/', async (req, res) => {
     await trello.newCard(req.body);
     res.send("Success!\n");
   } catch (err) {
-    res.send("Failed because of reasons, error has been logged\n")
+    console.log("Received request " + JSON.stringify(submission));
+    res.send("Failed because of reasons, error has been logged");
   }
 });
 
