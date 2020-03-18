@@ -45,7 +45,7 @@ app.post(`/${endpoint}`, async (req, res) => {
   const action = {};
   const trello = new Trello(action.board);
 
-  console.error('Web hook has been called ' + JSON.stringify(req.body));
+  console.error(`Webhook call with payload ${JSON.stringify(req.body)}`);
 
   if (req.body.action.display.translationKey === "action_move_card_from_list_to_list") {
     status.old = req.body.action.data.listBefore.name.toLowerCase();
@@ -71,7 +71,7 @@ app.post(`/${endpoint}`, async (req, res) => {
         const task = await workspace.newTask(taskData, [groupId]);
         if (!(task instanceof Error)) {
           // Add a link to Zelos task
-          trello.addComment(action.card, task);
+          await trello.addComment(action.card, task);
           // Mark the card
           await trello.addLabel(action.card, status.new, "green");
           // Send a confirmation message
@@ -81,6 +81,7 @@ app.post(`/${endpoint}`, async (req, res) => {
               //await text.sendMessage(taskData.phone, messages.approved);
               await trello.addLabel(action.card, "SMS sent", "blue");
             } catch (err) {
+              console.error(`Error while adding approved Trello label: ${err.message}`);
             }
           }
         }
@@ -94,13 +95,14 @@ app.post(`/${endpoint}`, async (req, res) => {
           const cardFields = await trello.getCustomFields(action.card);
           const taskData = parseCustomFields(cardFields, trello.customFields);
           console.log(taskData);
-          if (!taskData.phone === "") {
-            console.log(`sending a text to ${taskData.phone}`);
+          if (taskData.phone !== "") {
+            console.log(`[i]] Sending a text to ${taskData.phone}`);
             //const text = new Infobip();
             try {
               //await text.sendMessage(taskData.phone, messages.rejected);
-              trello.addLabel(action.card, "SMS sent", "blue");
+              await trello.addLabel(action.card, "SMS sent", "blue");
             } catch (err) {
+              console.error(`Error while adding reject Trello label: ${err.message}`);
             }
           }
         }
