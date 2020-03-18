@@ -39,12 +39,12 @@ class Zelos {
         let url = `${this.url}/api/group?name=${name}`;
         url = encodeURI(url);
         const res = await axios.get(url);
-        if (res.data.data == "") {
+        if (res.data.data === "") {
             return "";
-        } else {
-            const group = res.data.data
-            return group[0].data.id
         }
+        const group = res.data.data;
+
+        return group[0].data.id;
     }
 
     async newTask(details, groups = []) {
@@ -79,13 +79,14 @@ class Zelos {
             "location_id": null,
             "user_ids": []
         };
+        console.log(`[D] Submitting regular task to Zelos: ${JSON.stringify(body)}`);
         try {
-            const res = await axios.post(`${this.url}/api/task/regular`, body)
+            const res = await axios.post(`${this.url}/api/task/regular`, body);
             const taskUrl = this.url + "/tasks/" + res.data.data.id;
             console.log(`[i] Created ${taskUrl}`);
             return taskUrl;
         } catch (err) {
-            console.error(`[!] Failed to create task: ${err.message}`)
+            console.error(`[!] Failed to create task: ${err.message}`);
             return err;
         }
         
@@ -94,7 +95,7 @@ class Zelos {
 
 String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
-}
+};
 
 function getKeyByValue(object, value) { 
     return Object.keys(object).find(key => object[key] === value); 
