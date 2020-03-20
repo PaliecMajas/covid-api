@@ -96,8 +96,9 @@ class Trello {
 
 
     async storeRequest(request) {
+        const key = datastore.key('request');
         const requestEntry = {
-            key: datastore.key('request'),
+            key: key,
             data: {
                 request: request,
                 createdOn: new Date().toUTCString(),
@@ -106,7 +107,12 @@ class Trello {
             }
         };
         console.log(`[D] Store into data store ${JSON.stringify(requestEntry)}`);
-        return datastore.save(requestEntry);
+        return datastore.save(requestEntry, (err) => {
+            if (err) {
+                console.error(`[E] Error while storing into data store ${err.message}`);
+            }
+            console.log(`[i] Data stored ${key.path}`);
+        });
     }
 }
 
