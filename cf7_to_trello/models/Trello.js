@@ -96,7 +96,7 @@ class Trello {
 
 
     async storeRequest(request, trelloId) {
-        return datastore.save({
+        const requestEntry = {
             key: datastore.key('request'),
             data: {
                 request: request,
@@ -104,7 +104,9 @@ class Trello {
                 region: request.location,
                 trelloId: trelloId
             }
-        });
+        };
+        console.log(`[D] Store into data store ${JSON.stringify(requestEntry)}`);
+        return datastore.save(requestEntry);
     }
 }
 
