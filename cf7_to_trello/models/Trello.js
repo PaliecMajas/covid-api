@@ -52,11 +52,11 @@ class Trello {
         query.push(`idList=${list}`);
         let request = JSON.stringify(formFields.request);
         if (request.length > 160){
-            query.push(`name=${encodeURI(request.substring(0,157))}...`);
+            query.push(`name=${request.substring(0,157)}...`);
         } else {
-            query.push(`name=${encodeURI(request)}`);
+            query.push(`name=${request}`);
         }
-        query.push(`desc=${encodeURI(request)}`);
+        query.push(`desc=${request}`);
         query = query.join('&');
         const reqUri = `https://api.trello.com/1/cards${this.authParams}&${query}`;
         const req = encodeURI(reqUri);
