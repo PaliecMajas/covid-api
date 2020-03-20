@@ -11,6 +11,7 @@
   "author": "Viktor Lillemäe",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/datastore": "^5.1.0",
     "@google-cloud/storage": "^4.6.0",
     "axios": "^0.19.2",
     "express": "^4.17.1",
