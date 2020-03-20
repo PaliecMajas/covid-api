@@ -50,11 +50,11 @@ class Trello {
         let query = [];
         let request = JSON.stringify(formFields.request);
         if (request.length > 160){
-            query.push(`name=${request.substring(0,157)}...`);
+            query.push(`name=${encodeURI(request.substring(0,157))}...`);
         } else {
-            query.push(`name=${request}`);
+            query.push(`name=${encodeURI(request)}`);
         }
-        query.push(`desc=${request}`);
+        query.push(`desc=${encodeURI(request)}`);
         query.push(`pos=bottom`);
         query.push(`idList=${list}`);
         query = query.join('&');
