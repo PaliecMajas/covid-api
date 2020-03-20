@@ -107,11 +107,11 @@ class Trello {
             }
         };
         console.log(`[D] Store into data store ${JSON.stringify(requestEntry)}`);
-        return datastore.save(requestEntry, (err) => {
+        return datastore.save(requestEntry, (err, apiResponse) => {
             if (err) {
                 console.error(`[E] Error while storing into data store ${err.message}`);
             }
-            console.log(`[i] Data stored ${key.path}`);
+            console.log(`[i] Data stored ${key.path} ${JSON.stringify(apiResponse)}`);
         });
     }
 }
