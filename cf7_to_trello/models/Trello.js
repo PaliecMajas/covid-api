@@ -61,8 +61,8 @@ class Trello {
 
         const reqUri = `https://api.trello.com/1/cards${this.authParams}&${query.join('&')}`;
         try {
+            await this.storeRequest(formFields);
             const res = await axios.post(reqUri, dataBody);
-            await this.storeRequest(formFields, res.data.id);
             this.addFields(res.data.id, formFields);
         } catch (err) {
             console.error(`Error while creating Trello card: ${err.message} (${reqUri})`);
@@ -95,14 +95,14 @@ class Trello {
     }
 
 
-    async storeRequest(request, trelloId) {
+    async storeRequest(request) {
         const requestEntry = {
             key: datastore.key('request'),
             data: {
                 request: request,
                 createdOn: new Date().toUTCString(),
                 region: request.location,
-                trelloId: trelloId
+                trelloId: null
             }
         };
         console.log(`[D] Store into data store ${JSON.stringify(requestEntry)}`);
