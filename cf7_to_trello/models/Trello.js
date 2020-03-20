@@ -48,6 +48,8 @@ class Trello {
 
     async newCard(formFields, list = this.lists.incoming) {
         let query = [];
+        query.push(`pos=bottom`);
+        query.push(`idList=${list}`);
         let request = JSON.stringify(formFields.request);
         if (request.length > 160){
             query.push(`name=${encodeURI(request.substring(0,157))}...`);
@@ -55,8 +57,6 @@ class Trello {
             query.push(`name=${encodeURI(request)}`);
         }
         query.push(`desc=${encodeURI(request)}`);
-        query.push(`pos=bottom`);
-        query.push(`idList=${list}`);
         query = query.join('&');
         const reqUri = `https://api.trello.com/1/cards${this.authParams}&${query}`;
         const req = encodeURI(reqUri);
@@ -64,7 +64,7 @@ class Trello {
             const res = await axios.post(req);
             this.addFields(res.data.id, formFields);
         } catch (err) {
-            console.error('Error while creating Trello card: ' + err.message);
+            console.error(`Error while creating Trello card: ${err.message} (${reqUri})`);
             return err;
         }
     }
