@@ -1,5 +1,6 @@
 const axios = require('axios');
 const {Datastore} = require('@google-cloud/datastore');
+const Slack = require('./Slack');
 
 const datastore = new Datastore();
 
@@ -62,6 +63,8 @@ class Trello {
             await this.storeEntity(dataStoreEntity);
 
             this.addFields(res.data.id, formFields);
+            const slack = new Slack();
+            await slack.newMessage(formFields.name, res.data.shortUrl);
         } catch (err) {
             console.error(`[E] Error while creating Trello card: ${err.message} (${reqUri})`);
             return err;
