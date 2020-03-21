@@ -72,22 +72,28 @@ class Trello {
         const formCustomFields = { ...formFields };
         delete formCustomFields.request;
         const requests = [];
-        Object.keys(formCustomFields).forEach(item => {
-            const field = this.cfields[item];
+        Object.keys(formCustomFields).forEach(fieldName => {
+            if (formCustomFields[fieldName] === '') {
+                return;
+            }
+            const fieldId = this.cfields[fieldName];
             const value = {
                 "value": {
-                    "text": formCustomFields[item]
+                    "text": formCustomFields[fieldName]
                 },
                 "key": config.key,
                 "token": config.token
             };
-            requests.push([`https://api.trello.com/1/card/${cardId}/customField/${field}/item`, value]);
+            requests.push([`https://api.trello.com/1/card/${cardId}/customField/${fieldId}/item`, value, fieldName]);
         });
         for (const req of requests) {
+            const uri = req[0];
+            const data = req[1];
+            const fieldName = req[2];
             try {
-                await axios.put(req[0], req[1]);
+                await axios.put(uri, data);
             } catch (err) {
-                console.error(`[E] Failed to update custom fields on card ${cardId}: ${err.message}`);
+                console.error(`[E] Failed to update custom field "${fieldName}" on card ${cardId}: ${err.message}`);
             }
         }
     }
