@@ -33,7 +33,7 @@ class Trello {
                 this.lists[obj.name.toLowerCase()] = obj.id;
             });
         } catch (err) {
-            console.error(`[!] Couldn't get lists from Trello:\n${err.message}`);
+            console.error(`[E] Couldn't get lists from Trello: ${err.message}`);
         }  
     }
 
@@ -44,28 +44,26 @@ class Trello {
                 this.cfields[obj.name.toLowerCase().replace(/\s.*/, '')] = obj.id;
             });
         } catch (err) {
-            console.error(`[!] Couldn't get custom fields from Trello:\n${err.message}`);
+            console.error(`[E] Couldn't get custom fields from Trello: ${err.message}`);
         }
         
     }
 
-    async newCard(formFields, list = this.lists.incoming) {
-        let query = [];
-        query.push(`pos=bottom`);
-        query.push(`idList=${list}`);
-        const requestContent = JSON.stringify(formFields.request);
-        const dataBody = {
-            name: requestContent.length > 160 ? requestContent.substring(0,157) :  requestContent,
-            desc: requestContent
-        };
-
-        const reqUri = `https://api.trello.com/1/cards${this.authParams}&${query.join('&')}`;
+    async newCard(formFields) {
+        const reqUri = `https://api.trello.com/1/cards${this.authParams}&pos=bottom&idList=${this.lists.incoming}`;
         try {
-            await this.storeRequest(formFields);
-            const res = await axios.post(reqUri, dataBody);
+            const dataStoreEntity = this.formFieldsDataStoreEntity(formFields);
+            console.log(`[D] Store into data store ${JSON.stringify(dataStoreEntity)}`);
+            await this.storeEntity(dataStoreEntity);
+
+            const res = await axios.post(reqUri, this.formFieldsTrelloCardData(formFields));
+
+            dataStoreEntity.data.trelloId = res.data.id;
+            await this.storeEntity(dataStoreEntity);
+
             this.addFields(res.data.id, formFields);
         } catch (err) {
-            console.error(`Error while creating Trello card: ${err.message} (${reqUri})`);
+            console.error(`[E] Error while creating Trello card: ${err.message} (${reqUri})`);
             return err;
         }
     }
@@ -95,23 +93,36 @@ class Trello {
     }
 
 
-    async storeRequest(request) {
+    formFieldsDataStoreEntity(formFields) {
         const key = datastore.key('request');
-        const requestEntry = {
+        return {
             key: key,
             data: {
-                request: request,
+                request: formFields,
                 createdOn: new Date().toUTCString(),
-                region: request.location,
+                region: formFields.location,
                 trelloId: null
             }
         };
-        console.log(`[D] Store into data store ${JSON.stringify(requestEntry)}`);
-        return datastore.save(requestEntry, (err, apiResponse) => {
+    }
+
+    formFieldsTrelloCardData(formFields) {
+        const maxContentLen = 160;
+        const requestContent = formFields.request
+            .replace(/(?:\r\n|\r|\n)/g, '; ');
+        return {
+            name: requestContent.length > maxContentLen
+                ? requestContent.substring(0, maxContentLen - 3) + '...'
+                : requestContent,
+            desc: requestContent
+        };
+    }
+
+    async storeEntity(requestEntity) {
+        return datastore.save(requestEntity, (err, apiResponse) => {
             if (err) {
-                console.error(`[E] Error while storing into data store ${err.message}`);
+                console.error(`[E] Error while storing into data store: ${err.message} [${JSON.stringify(requestEntity)}]`);
             }
-            console.log(`[i] Data stored ${key.path} ${JSON.stringify(apiResponse)}`);
         });
     }
 }
