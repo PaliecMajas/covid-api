@@ -27,7 +27,7 @@ class Text2Reach {
             `api_key=${this.config['API_KEY']}`,
             `phone=${msisdn}`,
             `from=${this.fromName}`,
-            `message=${messageText}`
+            `message=${encodeURI(messageText)}`
         ];
         const uri = `${this.endpoint}?${queryParams.join('&')}`;
         // 0   - HTTP related error
