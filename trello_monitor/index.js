@@ -40,7 +40,7 @@ app.post(`/${endpoint}`, async (req, res) => {
   const action = {};
   const trello = new Trello(action.board);
 
-  console.error(`[D] Webhook call with payload ${JSON.stringify(req.body)}`);
+  console.log(`[D] Webhook call with payload ${JSON.stringify(req.body)}`);
 
   if (req.body.action.display.translationKey === "action_move_card_from_list_to_list") {
     status.old = req.body.action.data.listBefore.name.toLowerCase();
