@@ -82,10 +82,10 @@ class Zelos {
         try {
             const res = await axios.post(`${this.url}/api/task/regular`, body);
             const taskUrl = this.url + "/tasks/" + res.data.data.id;
-            console.log(`[i] Created ${taskUrl}`);
+            console.log(`[D] Created ${taskUrl}`);
             return taskUrl;
         } catch (err) {
-            console.error(`[!] Failed to create task: ${err.message}`);
+            console.error(`[E] Failed to create task: ${err.message}`);
             return err;
         }
         
