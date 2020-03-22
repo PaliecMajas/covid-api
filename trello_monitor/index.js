@@ -1,15 +1,10 @@
 const express = require('express');
 const app = express();
-const util = require('util');
 const Trello = require('./models/Trello');
 const Zelos = require('./models/Zelos');
+const Text2Reach = require('./models/Text2Reach');
 
-const sms = true; // assumes you have a texting service configured!
-//const Infobip = require('./models/Infobip'); // you don't need this if you don't
-const messages = {
-  "approved": process.env.MSG_APPROVED,
-  "rejected": process.env.MSG_REJECTED
-};
+const sendSms = process.env.SEND_SMS === 'true' || false;
 
 let endpoint = "";
 
@@ -32,11 +27,11 @@ if (!process.env.GCP_PROJECT) {
 
 // Verification endpoints for setting up Trello webhooks
 app.head(`/${endpoint}`, (req, res) => {
-  res.send("Yes hello, this is API");
+  res.send("OK");
 });
 
 app.get(`/${endpoint}`, (req, res) => {
-  res.send("Yes hello");
+  res.send("OK");
 });
 
 // Get data from Trello Webhook
@@ -45,7 +40,7 @@ app.post(`/${endpoint}`, async (req, res) => {
   const action = {};
   const trello = new Trello(action.board);
 
-  console.error(`Webhook call with payload ${JSON.stringify(req.body)}`);
+  console.error(`[D] Webhook call with payload ${JSON.stringify(req.body)}`);
 
   if (req.body.action.display.translationKey === "action_move_card_from_list_to_list") {
     status.old = req.body.action.data.listBefore.name.toLowerCase();
@@ -55,33 +50,27 @@ app.post(`/${endpoint}`, async (req, res) => {
   }
   if (status.old === "incoming") {
     await trello.init();
-    // Get card info
     const labels = await trello.getLabels(action.card);
     const cardFields = await trello.getCustomFields(action.card);
-    // Populate task data
     const taskData = parseCustomFields(cardFields, trello.customFields);
     taskData.description = await trello.getDesc(action.card);
 
     if (status.new === "approved") {
-      if (!checkLabels(labels, status.new)) {
-        // Create a task on Zelos
+      if ( ! checkLabels(labels, status.new)) {
         const workspace = new Zelos();
         await workspace.init();
         const groupId = await workspace.findGroup(taskData.location);
         const task = await workspace.newTask(taskData, [groupId]);
         if (!(task instanceof Error)) {
-          // Add a link to Zelos task
           await trello.addComment(action.card, task);
-          // Mark the card
           await trello.addLabel(action.card, status.new, "green");
-          // Send a confirmation message
-          if (sms && !(taskData.phone === "")) {
-            //const text = new Infobip();
+          if (sendSms && taskData.phone !== '') {
             try {
-              //await text.sendMessage(taskData.phone, messages.approved);
+              const text2Reach = new Text2Reach({API_KEY: process.env.T2R_API_KEY});
+              await text2Reach.sendMessage(taskData.phone, 'Jūsu pieteikums apstiprināts');
               await trello.addLabel(action.card, "SMS sent", "blue");
             } catch (err) {
-              console.error(`Error while adding approved Trello label: ${err.message}`);
+              console.error(`[E] Error while adding approved Trello label: ${err.message}`);
             }
           }
         }
@@ -89,29 +78,25 @@ app.post(`/${endpoint}`, async (req, res) => {
     }
     if (status.new === "rejected") {
       if (!checkLabels(labels, status.new)) {
-        // Send a rejected text (maybe)
-        if (sms) {
-          // Find the phone number (in a retarded manner)
+        if (sendSms) {
           const cardFields = await trello.getCustomFields(action.card);
           const taskData = parseCustomFields(cardFields, trello.customFields);
           console.log(taskData);
-          if (taskData.phone !== "") {
-            console.log(`[i]] Sending a text to ${taskData.phone}`);
-            //const text = new Infobip();
+          if (taskData.phone !== '') {
             try {
-              //await text.sendMessage(taskData.phone, messages.rejected);
+              const text2Reach = new Text2Reach({API_KEY: process.env.T2R_API_KEY});
+              await text2Reach.sendMessage(taskData.phone, 'Jūsu pieteikums noraidīts');
               await trello.addLabel(action.card, "SMS sent", "blue");
             } catch (err) {
-              console.error(`Error while adding reject Trello label: ${err.message}`);
+              console.error(`[E] Error while adding reject Trello label: ${err.message}`);
             }
           }
         }
-        // Mark the card
         await trello.addLabel(action.card, status.new, "red");
       }
     }
   }
-  res.send("Yes Hello");
+  res.send("OK");
 });
 
 function checkLabels(labels, status) {
@@ -134,13 +119,6 @@ function parseCustomFields(cardFields, boardFields) {
 
 function getKeyByValue(object, value) { 
   return Object.keys(object).find(key => object[key] === value); 
-}
-
-// debug functions
-function printRequest(req) {
-  console.log("Headers:\n" + util.inspect(req.headers));
-  console.log("Query:\n" + util.inspect(req.query));
-  console.log("Body:\n" + util.inspect(req.body));
 }
 
 exports.trello_monitor = app;
