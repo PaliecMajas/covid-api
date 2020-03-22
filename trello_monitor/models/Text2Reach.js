@@ -4,15 +4,14 @@ const {Datastore} = require('@google-cloud/datastore');
 const datastore = new Datastore();
 
 class Text2Reach {
-    fromName = 'PaliecMajas';
-    endpoint = 'https://api.text2reach.com/sms/send';
-
     /**
      * @param config Expected object of config parameters:
      *  - API_KEY Application key
      */
     constructor(config) {
         this.config = config;
+        this.fromName = 'PaliecMajas';
+        this.endpoint = 'https://api.text2reach.com/sms/send';
     }
 
 
