@@ -59,9 +59,12 @@ app.post(`/${endpoint}`, async (req, res) => {
       if ( ! checkLabels(labels, status.new)) {
         const workspace = new Zelos();
         await workspace.init();
-        const groupId = await workspace.findGroup(taskData.location);
+        const fullLocation = taskData.neighborhood === ''
+            ? taskData.location
+            : `${taskData.location} - ${taskData.neighborhood}`;
+        const groupId = await workspace.findGroup(fullLocation);
         const task = await workspace.newTask(taskData, [groupId]);
-        if (!(task instanceof Error)) {
+        if ( ! task instanceof Error) {
           await trello.addComment(action.card, task);
           await trello.addLabel(action.card, status.new, "green");
           if (sendSms && taskData.phone !== '') {
