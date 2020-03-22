@@ -15,7 +15,14 @@ class Text2Reach {
     }
 
 
-    async sendMessage(msisdn, messageText) {
+    async sendMessage(phoneNumber, messageText) {
+        if ( ! phoneNumber.match(/^(371)?(\d{8})$/)) {
+            // Work only with LV phone numbers
+            return;
+        }
+        const msisdn = phoneNumber.length === 11
+            ? phoneNumber
+            : `371${phoneNumber}`;
         const queryParams = [
             `api_key=${this.config['API_KEY']}`,
             `phone=${msisdn}`,
