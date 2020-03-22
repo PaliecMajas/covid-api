@@ -64,18 +64,20 @@ app.post(`/${endpoint}`, async (req, res) => {
             : `${taskData.location} - ${taskData.neighborhood}`;
         const groupId = await workspace.findGroup(fullLocation);
         const task = await workspace.newTask(taskData, [groupId]);
-        if ( ! task instanceof Error) {
-          await trello.addComment(action.card, task);
-          await trello.addLabel(action.card, status.new, "green");
-          if (sendSms && taskData.phone !== '') {
+        if (task instanceof Error) {
+            res.send('Err');
+            return;
+        }
+        await trello.addComment(action.card, task);
+        await trello.addLabel(action.card, status.new, "green");
+        if (sendSms && taskData.phone !== '') {
             try {
-              const text2Reach = new Text2Reach({API_KEY: process.env.T2R_API_KEY});
-              await text2Reach.sendMessage(taskData.phone, 'Jūsu pieteikums apstiprināts');
-              await trello.addLabel(action.card, "SMS sent", "blue");
+                const text2Reach = new Text2Reach({API_KEY: process.env.T2R_API_KEY});
+                await text2Reach.sendMessage(taskData.phone, 'Jūsu pieteikums apstiprināts');
+                await trello.addLabel(action.card, "SMS sent", "blue");
             } catch (err) {
-              console.error(`[E] Error while adding approved Trello label: ${err.message}`);
+                console.error(`[E] Error while adding approved Trello label: ${err.message}`);
             }
-          }
         }
       }
     }
