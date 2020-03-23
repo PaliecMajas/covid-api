@@ -43,6 +43,9 @@ class Zelos {
             return "";
         }
         const group = res.data.data;
+        if (group.length === 0) {
+            console.error(`[E] Cannot find group "${name}"`);
+        }
 
         return group[0].data.id;
     }
