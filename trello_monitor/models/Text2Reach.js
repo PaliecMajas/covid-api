@@ -16,7 +16,7 @@ class Text2Reach {
 
 
     async sendMessage(phoneNumber, messageText) {
-        if ( ! phoneNumber.match(/^(371)?(\d{8})$/)) {
+        if ( ! phoneNumber.match(/^(\+?371)?(\d{8})$/)) {
             // Work only with LV phone numbers
             return;
         }
