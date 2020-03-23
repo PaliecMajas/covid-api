@@ -59,7 +59,7 @@ app.post(`/${endpoint}`, async (req, res) => {
       if ( ! checkLabels(labels, status.new)) {
         const workspace = new Zelos();
         await workspace.init();
-        const fullLocation = taskData.neighborhood === ''
+        const fullLocation = ! taskData.neighborhood
             ? taskData.location
             : `${taskData.location} - ${taskData.neighborhood}`;
         const groupId = await workspace.findGroup(fullLocation);
