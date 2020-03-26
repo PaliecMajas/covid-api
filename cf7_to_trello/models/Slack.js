@@ -8,8 +8,9 @@ class Slack {
         const data = {
             text: `New order placed! From: ${authorName}. Go check it out ${cardUri}`
         };
-        console.log(`[D] Slack webhook call ${JSON.stringify(data)} -> ${uri}`);
+        console.log(`[D] Slack webhook call ${JSON.stringify(data)} -> ${hackForceSlackUri}`);
         await axios.post(hackForceSlackUri, data);
+        console.log(`[D] Slack webhook call ${JSON.stringify(data)} -> ${paliecMajasSlackUri}`);
         await axios.post(paliecMajasSlackUri, data);
     }
 }
