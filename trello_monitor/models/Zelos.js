@@ -75,7 +75,7 @@ class Zelos {
             "publish_at": null,
             "active_until": null,
             "images": [],
-            "assignment_approve_needed": true,
+            "assignment_approve_needed": false,
             "completion_approve_needed": false,
             "max_participants_amount": 1,
             "groups": groups,
