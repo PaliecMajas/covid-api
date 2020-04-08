@@ -22,6 +22,7 @@ class Trello {
         this.cfields = {};
         this.authParams = `?key=${config.key}&token=${config.token}`;
     }
+
     async init() {
         await this.initLists();
         await this.initFields();
@@ -35,7 +36,7 @@ class Trello {
             });
         } catch (err) {
             console.error(`[E] Couldn't get lists from Trello: ${err.message}`);
-        }  
+        }
     }
 
     async initFields() {
@@ -47,7 +48,6 @@ class Trello {
         } catch (err) {
             console.error(`[E] Couldn't get custom fields from Trello: ${err.message}`);
         }
-        
     }
 
     async newCard(formFields) {
@@ -72,7 +72,7 @@ class Trello {
     }
 
     async addFields(cardId, formFields) {
-        const formCustomFields = { ...formFields };
+        const formCustomFields = {...formFields};
         delete formCustomFields.request;
         const requests = [];
         Object.keys(formCustomFields).forEach(fieldName => {
