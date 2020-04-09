@@ -26,7 +26,7 @@ app.post('/', async (req, res) => {
     const trello = new Trello();
     await trello.init();
     try {
-        let data = req.body;
+        const data = req.body;
         console.log('[i] New request from CF7 ' + JSON.stringify(data));
         await trello.newCard(data);
         res.send("Success!\n");
