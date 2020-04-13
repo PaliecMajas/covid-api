@@ -1,0 +1,8 @@
+{
+  "name": "volunteer_bot",
+  "version": "0.0.1",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "express": "^4.17.1"
+  }
+}
