@@ -1,7 +1,7 @@
 // A function to run integration test on GCP
 const express = require('express');
 const app = express();
-const Logger = require('../lib/Logger');
+const Logger = require('./../lib/Logger');
 
 const logger = new Logger();
 
