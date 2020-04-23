@@ -56,13 +56,23 @@ app.post(`/${endpoint}`, async (req, res) => {
     taskData.description = await trello.getDesc(action.card);
 
     if (status.new === "approved") {
+      // This is being called when a task is moved into the approved column
+      // We then create a Zelos task for it with the appropriate Zelos group
       if ( ! checkLabels(labels, status.new)) {
         const workspace = new Zelos();
         await workspace.init();
-        const fullLocation = ! taskData.neighborhood
-            ? taskData.location
-            : `${taskData.location} - ${taskData.neighborhood}`;
-        const groupId = await workspace.findGroup(fullLocation);
+
+        // Location can be a string name or a number representing Zelos group ID
+        const location = taskData.location;
+        let groupId;
+        if (isNaN(location)) {
+          const fullLocation = !taskData.neighborhood
+              ? location
+              : `${location} - ${taskData.neighborhood}`;
+          groupId = await workspace.findGroup(fullLocation);
+        } else {
+          groupId = location;
+        }
         const task = await workspace.newTask(taskData, [groupId]);
         if (task instanceof Error) {
             res.send('Err');
