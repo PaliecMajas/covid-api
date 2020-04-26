@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const Trello = require('./models/Trello');
 
+const LOCATION_SEP = ',,';
+
 // Check environment
 if (!process.env.GCP_PROJECT) {
     console.log("[i] Not in the cloud: entering debug mode");
@@ -16,6 +18,31 @@ if (!process.env.GCP_PROJECT) {
     });
 }
 
+/**
+ * Transforms the data coming from the website to what we want to store on Trello
+ */
+function getWebsiteFormData(body) {
+    let location = body['location'];
+    let zelosGroupId = null;
+    // Due to difficulties adopting CF7 behaviour, we're temporarily using the location field to send both
+    // the name of the city and its  Zelos group ID, separated by ",,". We're not sending this for all values.
+    if (location.contains(LOCATION_SEP)) {
+        const strings = location.split(LOCATION_SEP);
+        location = strings[0];
+        zelosGroupId = strings[1];
+    }
+
+    return {
+        'location': location,
+        'neighborhood': req['neighborhood'],
+        'zelos_group_id': zelosGroupId,
+        // todo: both email address and physical address are called "address" in the form. We should fix this.
+        'address': req['address'],
+        'how-did-you-hear': req['how-did-you-hear'],
+        'how-did-you-hear-other': req['how-did-you-hear-other'],
+    };
+}
+
 // Default route
 app.get('/', (req, res) => {
     res.send("Yes hello");
@@ -26,7 +53,7 @@ app.post('/', async (req, res) => {
     const trello = new Trello();
     await trello.init();
     try {
-        const data = req.body;
+        const data = getWebsiteFormData(req.body);
         console.log('[i] New request from CF7 ' + JSON.stringify(data));
         await trello.newCard(data);
         res.send("Success!\n");

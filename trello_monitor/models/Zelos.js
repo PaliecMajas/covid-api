@@ -8,6 +8,9 @@ const config = {
     "workspace": process.env.ZELOS_WORKSPACE
 };
 
+/**
+ * Zelos API documentation can be found here: https://paliecmajas.zelos.space/api/documentation
+ */
 class Zelos {
     constructor() {
         this.url = `https://${config.workspace}.zelos.space`;

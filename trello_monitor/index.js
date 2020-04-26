@@ -62,17 +62,17 @@ app.post(`/${endpoint}`, async (req, res) => {
         const workspace = new Zelos();
         await workspace.init();
 
-        // Location can be a string name or a number representing Zelos group ID
         const location = taskData.location;
-        let groupId;
-        if (isNaN(location)) {
+        let groupId = taskData.zelos_group_id;
+
+        if (!isNaN(groupId)) {
+          // Search for the Zelos group ID if it wasn't already supplied
           const fullLocation = !taskData.neighborhood
               ? location
               : `${location} - ${taskData.neighborhood}`;
           groupId = await workspace.findGroup(fullLocation);
-        } else {
-          groupId = location;
         }
+
         const task = await workspace.newTask(taskData, [groupId]);
         if (task instanceof Error) {
             res.send('Err');
