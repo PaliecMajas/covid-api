@@ -33,13 +33,16 @@ function getWebsiteFormData(body) {
     }
 
     return {
+        'name': body['namek'],
+        'phone': body['phone'],
         'location': location,
-        'neighborhood': req['neighborhood'],
+        'neighborhood': body['neighborhood'],
         'zelos_group_id': zelosGroupId,
         // todo: both email address and physical address are called "address" in the form. We should fix this.
-        'address': req['address'],
-        'how-did-you-hear': req['how-did-you-hear'],
-        'how-did-you-hear-other': req['how-did-you-hear-other'],
+        'address': body['address'],
+        'email_address': body['email_address'],
+        'how-did-you-hear': body['how-did-you-hear'],
+        'how-did-you-hear-other': body['how-did-you-hear-other'],
     };
 }
 
