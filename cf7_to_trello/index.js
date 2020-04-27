@@ -28,7 +28,7 @@ function getWebsiteFormData(body) {
     let zelosGroupId = null;
     // Due to difficulties adopting CF7 behaviour, we're temporarily using the location field to send both
     // the name of the city and its  Zelos group ID, separated by ",,". We're not sending this for all values.
-    if (location.contains(LOCATION_SEP)) {
+    if (location.includes(LOCATION_SEP)) {
         const strings = location.split(LOCATION_SEP);
         location = strings[0];
         zelosGroupId = strings[1];
@@ -45,7 +45,7 @@ function getWebsiteFormData(body) {
         'email_address': body['email_address'],
         'how-did-you-hear': body['how-did-you-hear'],
         'how-did-you-hear-other': body['how-did-you-hear-other'],
-    };
+    }
 }
 
 // Default route
