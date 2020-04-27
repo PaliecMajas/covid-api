@@ -1,3 +1,5 @@
+// todo danielz: remove this later
+require('@google-cloud/debug-agent').start();
 const express = require('express');
 const app = express();
 const Trello = require('./models/Trello');
