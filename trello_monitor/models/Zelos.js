@@ -63,7 +63,7 @@ class Zelos {
         }
         const instruction = [];
         Object.keys(details).forEach(item => {
-            if (item === 'phone' || item === 'address' || item === 'full_name' || item === 'neighborhood') {
+            if (item === 'phone' || item === 'address' || item === 'name' || item === 'neighborhood') {
                 instruction.push(`${item.capitalize()}: ${details[item]}`);
             }
         });
