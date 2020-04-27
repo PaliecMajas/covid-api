@@ -8,7 +8,7 @@
     "daemon": "pm2 start index.js -e ./error.log -o ./output.log",
     "live": "PORT=8999 nodemon index.js"
   },
-  "author": "Viktor Lillemäe",
+  "author": "Paliec Majas",
   "license": "ISC",
   "dependencies": {
     "@google-cloud/datastore": "^5.1.0",
