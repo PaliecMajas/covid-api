@@ -52,9 +52,7 @@ app.post(`/${endpoint}`, async (req, res) => {
     await trello.init();
     const labels = await trello.getLabels(action.card);
     const cardFields = await trello.getCustomFields(action.card);
-    console.log(`[D] cardFields: ${JSON.stringify(cardFields)}`);
     const taskData = parseCustomFields(cardFields, trello.customFields);
-    console.log(`[D] Incoming taskData: ${JSON.stringify(taskData)}`);
     taskData.description = await trello.getDesc(action.card);
 
     if (status.new === "approved") {
@@ -67,7 +65,7 @@ app.post(`/${endpoint}`, async (req, res) => {
         const location = taskData.location;
         let groupId = taskData.zelos_group_id;
 
-        if (!isNaN(groupId)) {
+        if (isNaN(groupId)) {
           // Search for the Zelos group ID if it wasn't already supplied
           const fullLocation = !taskData.neighborhood
               ? location
