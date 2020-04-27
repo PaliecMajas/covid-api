@@ -52,7 +52,7 @@ app.post(`/${endpoint}`, async (req, res) => {
     await trello.init();
     const labels = await trello.getLabels(action.card);
     const cardFields = await trello.getCustomFields(action.card);
-    console.log(`[D] cardFields: ${JSON.stringify(taskData)}`);
+    console.log(`[D] cardFields: ${JSON.stringify(cardFields)}`);
     const taskData = parseCustomFields(cardFields, trello.customFields);
     console.log(`[D] Incoming taskData: ${JSON.stringify(taskData)}`);
     taskData.description = await trello.getDesc(action.card);
