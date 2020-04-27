@@ -33,6 +33,7 @@ function getWebsiteFormData(body) {
     }
 
     return {
+        'request': body['request'],
         'name': body['full_name'],
         'phone': body['phone'],
         'location': location,
