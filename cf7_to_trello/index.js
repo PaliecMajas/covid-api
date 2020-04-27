@@ -53,11 +53,12 @@ app.get('/', (req, res) => {
 
 // Get data from CF7 Webhook and create trello card
 app.post('/', async (req, res) => {
+    console.log('[i] New request from CF7');
     const trello = new Trello();
     await trello.init();
     try {
         const data = getWebsiteFormData(req.body);
-        console.log('[i] New request from CF7 ' + JSON.stringify(data));
+        console.log('[i] getWebsiteFormData: ' + JSON.stringify(data));
         await trello.newCard(data);
         res.send("Success!\n");
     } catch (err) {
