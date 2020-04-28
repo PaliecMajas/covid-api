@@ -16,6 +16,7 @@ class Zelos {
         this.url = `https://${config.workspace}.zelos.space`;
         this.credentials = config.credentials;
     }
+
     async init() {
         try {
             const res = await axios.post('https://app.zelos.space/api/auth', this.credentials);
@@ -27,11 +28,13 @@ class Zelos {
             console.error(`Error while authenticate to Zelos: ${e.message}`);
         }
     }
+
     async getTasks() {
         const res = await axios.get(`${this.url}/api/task`);
         this.tasks = res.data.data;
         console.log(`[i] Found ${this.tasks.length} tasks`)
     }
+
     async getGroups(name = "") {
         const res = await axios.get(`${this.url}/api/group`);
         this.groups = res.data.data;
@@ -54,24 +57,11 @@ class Zelos {
     }
 
     async newTask(details, groups = []) {
-        let name = "";
-        const description = details.description;
-        if (description.length > 255) {
-            name = `${description.substring(0,252)}...`
-        } else {
-            name = description
-        }
-        const instruction = [];
-        Object.keys(details).forEach(item => {
-            if (item === 'phone' || item === 'address' || item === 'name' || item === 'neighborhood') {
-                instruction.push(`${item.capitalize()}: ${details[item]}`);
-            }
-        });
         const body = {
             "type": "regular",
-            "name": `${name}`,
-            "description": `${description}`,
-            "instructions": `${instruction.join('\n')}`,
+            "name": this.nameFromDescription(details.description),
+            "description": details.description,
+            "instructions": this.instructionsFromDetails(details),
             "execution_start_date": null,
             "execution_end_date": null,
             "points": 1,
@@ -94,7 +84,25 @@ class Zelos {
             console.error(`[E] Failed to create task: ${err.message}`);
             return err;
         }
-        
+    }
+
+
+    nameFromDescription(description) {
+        return description.length > 255
+            ? `${description.substring(0,252)}...`
+            : description;
+    }
+
+
+    instructionsFromDetails(details) {
+        const instruction = [];
+        Object.keys(details).forEach(item => {
+            if (item === 'phone' || item === 'address' || item === 'name' || item === 'neighborhood') {
+                instruction.push(`${item.capitalize()}: ${details[item]}`);
+            }
+        });
+
+        return instruction.join('\n');
     }
 }
 
